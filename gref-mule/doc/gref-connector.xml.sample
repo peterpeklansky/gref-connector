@@ -1,0 +1,7 @@
+<!-- BEGIN_INCLUDE(gref:put-in-barn) -->
+    <gref:put-in-barn animal="#[map-payload:animal]" />
+<!-- END_INCLUDE(gref:put-in-barn) -->
+
+<!-- BEGIN_INCLUDE(gref:get-gref-info) -->
+    <gref:get-gref-info />
+<!-- END_INCLUDE(gref:get-gref-info) -->
