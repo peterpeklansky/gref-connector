@@ -104,6 +104,34 @@ public class GrefConnector {
 			throws GrefConnectorAccessDeniedException, GrefConnectorException {
 		return getClient().modifyCanonicalObject(sourceSystem, sourceSystemId, objectName, canonicalId);
 	}
+	
+	/**
+	 * Check whether there exist Object in target system matching given canonical ID
+	 * @param canonicalId Canonical ID for the given object e.g. b4f669e7-7c5e-420c-9f26-5f06318955a1
+     * @param objectName Object name e.g. product, feature etc.
+     * @param systemName e.g. salesforce, ezpublish etc.
+	 * @return true if Object exists in target system, otherwise false
+	 * @throws GrefConnectorAccessDeniedException
+	 * @throws GrefConnectorException
+	 */
+	@Processor
+	public boolean checkTargetExistence(String objectName, String canonicalId, String systemName) 
+			throws GrefConnectorAccessDeniedException, GrefConnectorException {
+		return getClient().checkCanonicalObject(objectName, canonicalId, systemName);
+	}
+	
+	/**
+     * Check whether there exist Canonical Object for a given object name and its source system Id
+     * @param sourceSystem Name of the source system whose ID is being passed
+     * @param sourceSystemId Source system ID of the object
+     * @param objectName Object name e.g. product, feature etc.
+     * @return true if Canonical Object exists
+     * @throws Gref custom exceptions
+     */
+	@Processor
+	public boolean checkCanonicalExistence(String sourceSystem, String sourceSystemId, String objectName) throws GrefConnectorAccessDeniedException, GrefConnectorException {
+		return getClient().checkCanonicalId(sourceSystem, sourceSystemId, objectName);
+	}
 
 	public GrefClient getClient() {
 		return client;

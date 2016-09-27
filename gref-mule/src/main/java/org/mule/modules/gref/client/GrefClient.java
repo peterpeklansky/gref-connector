@@ -95,6 +95,7 @@ public class GrefClient {
 				String.format("ERROR - statusCode: 401 - message: canonical object not "
 						+ "found for the system : %s given canonical ID : %s", systemName, canonicalId));
 	}
+	
 	/**
      * Client method - Get Canonical Object(GrefInfo POJO) given its canonical ID
      * @param canonicalId Canonical ID for the given object e.g. b4f669e7-7c5e-420c-9f26-5f06318955a1
@@ -140,6 +141,56 @@ public class GrefClient {
 			GrefInfo grefInfo = executePut(webResource, GrefInfo.class, inputMessage);
 			LOG.info("Canonical Object {}",grefInfo.toString());
 			return grefInfo;
+	}
+	
+	/**
+	 * Client method - Check whether there exist Object in target system matching given canonical ID
+	 * @param canonicalId Canonical ID for the given object e.g. b4f669e7-7c5e-420c-9f26-5f06318955a1
+     * @param objectName Object name e.g. product, feature etc.
+     * @param systemName e.g. salesforce, ezpublish etc.
+	 * @return true if Object exists in target system, otherwise false
+	 * @throws GrefConnectorAccessDeniedException
+	 * @throws GrefConnectorException
+	 */
+	public boolean checkCanonicalObject(String objectName, String canonicalId, String systemName) 
+			throws GrefConnectorAccessDeniedException, GrefConnectorException {
+
+		List<GrefInfo> grefInfoList = getCanonicalObjectList(objectName, canonicalId);
+		
+		Iterator<GrefInfo> grefInfoIterator = grefInfoList.iterator();	
+		while (grefInfoIterator.hasNext())
+		{
+			GrefInfo grefInfo = grefInfoIterator.next();
+			if (systemName.equalsIgnoreCase(grefInfo.getSource())) {
+				return true;
+			}	
+		}
+		return false;
+	}
+	
+	/**
+     * Client method - Check whether there exist Canonical Object for a given object name and its source system Id
+     * @param sourceSystem Name of the source system whose ID is being passed
+     * @param sourceSystemId Source system ID of the object
+     * @param objectName Object name e.g. product, feature etc.
+     * @return true if Canonical Object exists
+     * @throws Gref custom exceptions
+     */
+	public boolean checkCanonicalId(String sourceSystem, String sourceSystemId, String objectName) 
+			throws GrefConnectorAccessDeniedException, GrefConnectorException {
+		WebResource webResource = getApiResource().path("sources").path(sourceSystem).path("objects").path(objectName).path(sourceSystemId);
+		try {
+			GrefInfo grefInfo = execute(webResource, GrefInfo.class);
+			if (grefInfo != null && grefInfo.getCanonical() != null) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (GrefConnectorException e) {
+			return false;
+		}
+		//LOG.info("Canonical Object {}",grefInfo.toString());
+		//return grefInfo;
 	}
 	
 	/**
